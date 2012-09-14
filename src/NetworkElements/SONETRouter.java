@@ -20,6 +20,33 @@ public class SONETRouter extends SONETRouterTA{
 	 * @param	nic the NIC the frame was received on
 	 */
 	public void receiveFrame(SONETFrame frame, int wavelength, OpticalNICTA nic){
+		/**
+		If a frame is on the routers drop frequency it takes it off of the line (it might be for that router, or has to be forwarded to somewhere off of the ring)
+		If a frame is on the routers drop frequency, and is also the routers destination frequency, the frame is forwarded to the sink(frame, wavelength) method. In real life the sink method would be sending the data to the layer above)
+		If a frame is not on the routers drop frequency the frame is forwarded on all interfaces, except the interface the frame was received on (sendRingFrame())
+		**/
+		
+//		for (OpticalNICTA n : this.NICs) {
+//			System.out.println(n);
+//		}
+		
+		boolean isSelfDropFrequency = this.dropFrequency.contains(new Integer(wavelength));
+		boolean isDestinationFrequency = this.destinationFrequencies.containsValue(new Integer(wavelength));
+		
+		
+		if (isSelfDropFrequency){ // Take of the line if the given wavelength is contained.
+			if (isDestinationFrequency){
+				this.sink(frame, wavelength);
+			}else{
+				// TBD
+				System.out.println("log: Not destination => forward to who?");
+			}
+		}else{
+			// Forward to all interfaces except incoming interface
+			System.out.println("log: Send data through other interfaces.");
+			this.sendRingFrame(frame, wavelength, nic);
+		}
+		
 	}
 	
 	/**
@@ -31,7 +58,7 @@ public class SONETRouter extends SONETRouterTA{
 	public void sendRingFrame(SONETFrame frame, int wavelength, OpticalNICTA nic){
 		// Loop through the interfaces sending the frame on interfaces that are on the ring
 		// except the one it was received on. Basically what UPSR does
-		for(OpticalNICTA NIC:NICs)
+		for(OpticalNICTA NIC: this.NICs)
 			if(NIC.getIsOnRing() && !NIC.equals(nic))
 				NIC.sendFrame(frame, wavelength);
 	}
