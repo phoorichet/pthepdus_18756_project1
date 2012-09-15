@@ -20,5 +20,10 @@ public class SPE extends SPETA{
 	/**
 	 * Returns a clone of this SPE object
 	 */
-	public SPE clone(){ return null; }
+	public SPE clone(){
+		// Make sure that all properties are copied.
+		SPE clonedSPE = new SPE(this.getVTPointer());
+		clonedSPE.addDelay(this.delay);
+		return clonedSPE; 
+	}
 }

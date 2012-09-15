@@ -33,13 +33,13 @@ public class SONETRouter extends SONETRouterTA{
 		boolean isSelfDropFrequency = this.dropFrequency.contains(new Integer(wavelength));
 		boolean isDestinationFrequency = this.destinationFrequencies.containsValue(new Integer(wavelength));
 		
-		
 		if (isSelfDropFrequency){ // Take of the line if the given wavelength is contained.
 			if (isDestinationFrequency){
+				System.out.format("SONETRouter.receiveFrame(): isSelfDropFrequency and isDestinationFrequency are true!\n");
 				this.sink(frame, wavelength);
 			}else{
-				// TBD
-				System.out.println("log: Not destination => forward to who?");
+				// TODO
+				System.out.format("log: Not destination => forward to who?");
 			}
 		}else{
 			// Forward to all interfaces except incoming interface
@@ -59,8 +59,11 @@ public class SONETRouter extends SONETRouterTA{
 		// Loop through the interfaces sending the frame on interfaces that are on the ring
 		// except the one it was received on. Basically what UPSR does
 		for(OpticalNICTA NIC: this.NICs)
-			if(NIC.getIsOnRing() && !NIC.equals(nic))
-				NIC.sendFrame(frame, wavelength);
+			if(NIC.getIsOnRing() && !NIC.equals(nic)){
+				// Create a new frame to offset sending the same frame instance.
+				SONETFrame newFrame = new SONETFrame(frame.getSPE().clone());
+				NIC.sendFrame(newFrame, wavelength);
+			}
 	}
 	
 
