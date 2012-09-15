@@ -34,17 +34,15 @@ public class SONETRouter extends SONETRouterTA{
 		boolean isDestinationFrequency = this.destinationFrequencies.containsValue(new Integer(wavelength));
 		
 		if (isSelfDropFrequency){ // Take of the line if the given wavelength is contained.
-			if (isDestinationFrequency){
-				System.out.format("SONETRouter.receiveFrame(): isSelfDropFrequency and isDestinationFrequency are true!\n");
-				this.sink(frame, wavelength);
-			}else{
-				// TODO
-				System.out.format("log: Not destination => forward to who?");
-			}
+			this.sink(frame, wavelength);
 		}else{
-			// Forward to all interfaces except incoming interface
-			System.out.println("log: Send data through other interfaces.");
-			this.sendRingFrame(frame, wavelength, nic);
+			if (isDestinationFrequency){
+				// Forward to all interfaces except incoming interface
+				System.out.println("log: Send data through other interfaces.");
+				this.sendRingFrame(frame, wavelength, nic);
+			}else{
+				System.out.format("SONETRouter.receiveFrame(): Not destination frequency for %s; frame dropped.\n", wavelength);
+			}
 		}
 		
 	}
