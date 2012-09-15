@@ -28,6 +28,10 @@ public class OtoOLink extends OtoOLinkTA{
 		else if(this.linkCut)
 			System.err.println("Error (OtoOLink: You tried to send data down a line that is cut");
 		else{
+			// Increase delay before sending data
+			int delay = 5;
+			frame.getSPE().addDelay(delay);
+			frame.addDelay(delay);
 			this.dest.receiveData(frame, wavelength);
 		}
 	}
