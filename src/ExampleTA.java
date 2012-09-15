@@ -44,6 +44,7 @@ public class ExampleTA {
 		 * Sent a frame on the network
 		 */
 		router1.source(new SONETFrame(new SPE(0)), 1490);
+//		router1.source(new SONETFrame(new SPE(0)), 1310);
 	}
 	
 	public static void main(String args[]){

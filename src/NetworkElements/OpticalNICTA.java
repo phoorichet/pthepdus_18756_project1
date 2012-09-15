@@ -210,4 +210,11 @@ public class OpticalNICTA implements INICTA{
 		
 		this.parent.receiveFrame(frame, wavelength, this);
 	}
+	
+	/**
+	 * Print details to string
+	 */
+	public String toString(){
+		return String.format("[Nic => Id=%d, SrcAddr=%s]", this.getID(), this.getParent().getAddress());
+	}
 }

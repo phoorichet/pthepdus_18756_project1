@@ -38,7 +38,7 @@ public class SONETRouter extends SONETRouterTA{
 		}else{
 			if (isDestinationFrequency){
 				// Forward to all interfaces except incoming interface
-				System.out.println("log: Send data through other interfaces.");
+				System.out.format("\nlog: Send data through other interfaces\n");
 				this.sendRingFrame(frame, wavelength, nic);
 			}else{
 				System.out.format("SONETRouter.receiveFrame(): Not destination frequency for %s; frame dropped.\n", wavelength);
@@ -60,6 +60,8 @@ public class SONETRouter extends SONETRouterTA{
 			if(NIC.getIsOnRing() && !NIC.equals(nic)){
 				// Create a new frame to offset sending the same frame instance.
 				SONETFrame newFrame = new SONETFrame(frame.getSPE().clone());
+				
+				System.out.format("\tSONETRouter.sendRingFrame(): Sending frame %s wavelength [%d] via NIC: %s\n",newFrame, wavelength, NIC);
 				NIC.sendFrame(newFrame, wavelength);
 			}
 	}

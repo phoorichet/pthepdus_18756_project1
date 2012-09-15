@@ -16,4 +16,11 @@ public class SONETFrame extends SONETFrameTA{
 	public void addDelay(int delay){
 		this.delay += delay;
 	}
+	
+	/**
+	 * Print to string
+	 */
+	public String toString(){
+		return String.format("{Frame => SPE=%s, FrameDelay=%s]", this.getSPE(), this.getDealy());
+	}
 }

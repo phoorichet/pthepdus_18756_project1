@@ -32,6 +32,9 @@ public class OtoOLink extends OtoOLinkTA{
 			int delay = 5;
 			frame.getSPE().addDelay(delay);
 			frame.addDelay(delay);
+			System.out.format("\tOtoOLink.sendData(): Forwarding data from SrcAddr=%s to DestAddr=%s\n",
+					this.getSource().getParent().getAddress(),
+					this.getDest().getParent().getAddress());
 			this.dest.receiveData(frame, wavelength);
 		}
 	}

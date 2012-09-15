@@ -26,4 +26,11 @@ public class SPE extends SPETA{
 		clonedSPE.addDelay(this.delay);
 		return clonedSPE; 
 	}
+	
+	/**
+	 * Print details in string format
+	 */
+	public String toString(){
+		return String.format("[SPE=>VTPointer=%d, SPEDelay=%d]", this.getVTPointer(), this.getDelay());
+	}
 }
