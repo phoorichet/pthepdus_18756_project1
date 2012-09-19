@@ -30,16 +30,17 @@ public class SONETRouter extends SONETRouterTA{
 		If a frame is not on the routers drop frequency the frame is forwarded on all interfaces, except the interface the frame was received on (sendRingFrame())
 		**/
 		
-//		for (OpticalNICTA n : this.NICs) {
-//			System.out.println(n);
-//		}
-		
+		// Check if wavelength is a drop frequency
 		boolean isSelfDropFrequency = this.dropFrequency.contains(new Integer(wavelength));
+		 
+		// Check if it is a destination addresss
 		boolean isDestinationFrequency = nic != null ? this.destinationFrequencies.get(nic.getParent().getAddress()) == wavelength : false;
+		
+		// Check if wavelength is other's drop frequency 
 		boolean isKnownDestinationFrequency = this.destinationFrequencies.values().contains(wavelength);
 		
-		if (isSelfDropFrequency){ // Take of the line if the given wavelength is contained.
-			if (isDestinationFrequency){
+		if (isSelfDropFrequency){
+			if (isDestinationFrequency){ //also the routers destination frequency
 				if(debug)
 					System.out.format(">>SONETRouter[%s]: NIC=%s, Recieved as %s, Working=%s, Protection=%s\n",
 						this.getAddress(),
@@ -47,11 +48,11 @@ public class SONETRouter extends SONETRouterTA{
 						nic.getSendAsWorkingNIC()==true? "W": "P",
 						nic.getInLink().getSource().getWorkingNIC(),
 						nic.getInLink().getSource().getProtectionNIC());
+				// Revceive only one frame
 				if(nic.getSendAsWorkingNIC())
 					this.sink(frame, wavelength);
 			}else{
-				// Take off the ring or router
-				// Do not forward the the packet
+				// Take off from the line
 				this.takeOff(frame, wavelength);
 			}
 		}else{
@@ -63,7 +64,6 @@ public class SONETRouter extends SONETRouterTA{
 				System.out.format("SONETRouter.receiveFrame(): Not destination frequency for %s; frame dropped.\n", wavelength);
 			}
 		}
-		
 	}
 	
 	/**
@@ -95,11 +95,12 @@ public class SONETRouter extends SONETRouterTA{
 		if(shortestPathList.size() >=2){
 			outGoingWorkingNIC = shortestPathList.get(0);
 			outGoingProtectionNIC = shortestPathList.get(1);
-			
+			// Setup working and protection nics
 			outGoingProtectionNIC.setIsProtection(outGoingWorkingNIC);
 			outGoingWorkingNIC.setIsWorking(outGoingProtectionNIC);
 		}else if (shortestPathList.size() == 1){
 			outGoingWorkingNIC = shortestPathList.get(0);
+			// Setup working nic
 			outGoingWorkingNIC.setIsWorking(outGoingWorkingNIC);
 		}else{
 			//System.err.println("There is no path available for sending data.");
@@ -174,10 +175,7 @@ public class SONETRouter extends SONETRouterTA{
 			}else{ // There is no link available.
 				if(debug) System.out.format("\tSONETRouter[%s]: No outgoing link available\n", this.address);
 			}
-
 		}
-		
-		
 	}
 	
 	/**
@@ -193,9 +191,12 @@ public class SONETRouter extends SONETRouterTA{
 		
 		// First round, add available next hop
 		for(OpticalNICTA outNIC: this.NICs){
+			// Criteria: on ring, not equal to input nic, not cut
 			if(outNIC.getIsOnRing() && !outNIC.equals(inNIC) && (!outNIC.getOutLink().linkCut)){
+				// Out going nic must not share the same router address with incoming nic
 				if (!this.isOutgoingNICParentSameAsInComingNIC(outNIC, inNIC)){
 					ArrayList<Integer> nextHopList = this.destinationNextHop.get(wavelength);
+					// NextHop contain the wavelength
 					if (nextHopList != null && nextHopList.contains(outNIC.getID())){
 						shortestPathList.add(outNIC);
 					}
@@ -226,13 +227,17 @@ public class SONETRouter extends SONETRouterTA{
 	 */
 	public void buildNexHopTable(){
 		this.destinationNextHop = new TreeMap<Integer, ArrayList<Integer>>();
+		// Loop through registered frequency
 		for (Map.Entry<String, Integer> destFrequency : this.destinationFrequencies.entrySet()) {
 			String address = destFrequency.getKey();
 			Integer wavelength = destFrequency.getValue();
+			// Get the existing list or create it if it is null
 			ArrayList<Integer> nextHop = this.destinationNextHop.get(wavelength) == null? new ArrayList<Integer>() : this.destinationNextHop.get(wavelength);
 			for(OpticalNICTA NIC: this.NICs){
+				// Compare router address
 				String nextHopAddress = NIC.getOutLink().getDest().getParent().getAddress();
 				if (address == nextHopAddress){
+					// Add NIC id to the hashmap
 					nextHop.add(NIC.getID());
 				}
 			}
