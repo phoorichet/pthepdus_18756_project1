@@ -239,26 +239,6 @@ public class SONETRouter extends SONETRouterTA{
 			this.addDestinationHopCount(wavelength, nextHop);
 		}
 	}
-//	
-//	/**
-//	 * Look up for destination router that is relevant to the given wavelength.
-//	 * @param wavelength
-//	 * @return A destination address of a router
-//	 */
-//	public String findDestinationAddress(int wavelength){
-//		// The largest ring size is 3. The way to find the next hop is through NIC.
-//		// Assume that the given wavelength is contained in destination frequency list.
-//		String destRouterAddress = null;
-//		for (Map.Entry<String, Integer> destFrequency : this.destinationFrequencies.entrySet()) {
-//			String address = destFrequency.getKey();
-//			Integer wavelth = destFrequency.getValue();
-//			if (wavelength == wavelth){
-//				destRouterAddress = address;
-//				break;
-//			}
-//		}
-//		return destRouterAddress;	
-//	}
 
 	/**
 	 * Prevent a loop to the incoming router by determining if the next hop shares the same address.
