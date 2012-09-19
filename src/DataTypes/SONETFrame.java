@@ -21,6 +21,6 @@ public class SONETFrame extends SONETFrameTA{
 	 * Print to string
 	 */
 	public String toString(){
-		return String.format("{Frame => SPE=%s, FrameDelay=%s]", this.getSPE(), this.getDealy());
+		return String.format("{Frame => SPE=%s, FrameDelay=%s}", this.getSPE(), this.getDealy());
 	}
 }

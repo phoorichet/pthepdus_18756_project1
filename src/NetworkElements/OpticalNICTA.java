@@ -12,6 +12,7 @@ public class OpticalNICTA implements INICTA{
 	private	OpticalNICTA protectionNIC = null;
 	private Boolean hasError = false;
 	private Boolean isClockwise = false;
+	private Boolean sendAsWorkingNIC = false;
 	
 	/**
 	 * Creates a new Optical NIC
@@ -38,6 +39,15 @@ public class OpticalNICTA implements INICTA{
 	}
 	
 	/**
+	 * Return inLink as OtoOLinkTA
+	 * @return inLink OtoOLinkTA
+	 */
+	public OtoOLinkTA getInLink() {
+		return inLink;
+	}
+
+
+	/**
 	 * Set the outgoing optical link to this optical NIC
 	 * @param	outLink the outgoing optical link
 	 */
@@ -47,6 +57,15 @@ public class OpticalNICTA implements INICTA{
 		else
 			System.err.println("Error (OpticalNIC): You tried to assign an Optical out link that was not created for this interface");
 	}
+	
+	/**
+	 * Return outLink as OtoOLinkTA
+	 * @return outLink OtoOLinkTA
+	 */
+	public OtoOLinkTA getOutLink() {
+		return outLink;
+	}
+
 	
 	/**
 	 * Sets the ID for this optical NIC. Each NIC in a router should have a unique ID so that it can
@@ -113,9 +132,10 @@ public class OpticalNICTA implements INICTA{
 	 * @param	workingNIC The working NIC for this backup NIC
 	 */
 	public void setIsProtection(OpticalNICTA workingNIC){
-		if(this.parent != workingNIC.parent)
-			System.err.println("Error (OpticalNIC): The working NIC and protection must be in the same router");
-		
+		if (workingNIC != null){
+			if(this.parent != workingNIC.parent)
+				System.err.println("Error (OpticalNIC): The working NIC and protection must be in the same router");
+		}
 		this.workingNIC = workingNIC;
 	}
 	
@@ -132,9 +152,10 @@ public class OpticalNICTA implements INICTA{
 	 * @param	protectionNIC The protection NIC for this working NIC
 	 */
 	public void setIsWorking(OpticalNICTA protectionNIC){
-		if(this.parent != protectionNIC.parent)
-			System.err.println("Error (OpticalNIC): The working NIC and protection must be in the same router");
-		
+		if (protectionNIC!=null){
+			if(this.parent != protectionNIC.parent)
+				System.err.println("Error (OpticalNIC): The working NIC and protection must be in the same router");
+		}
 		this.protectionNIC = protectionNIC;
 	}
 	
@@ -211,10 +232,23 @@ public class OpticalNICTA implements INICTA{
 		this.parent.receiveFrame(frame, wavelength, this);
 	}
 	
+	
+	
+	public Boolean getSendAsWorkingNIC() {
+		return sendAsWorkingNIC;
+	}
+
+	public void setSendAsWorkingNIC(Boolean sendAsWorkingNIC) {
+		this.sendAsWorkingNIC = sendAsWorkingNIC;
+	}
+
 	/**
 	 * Print details to string
 	 */
 	public String toString(){
-		return String.format("[Nic => Id=%d, SrcAddr=%s]", this.getID(), this.getParent().getAddress());
+		return String.format("[Nic => Id=%d, SrcAddr=%s, DestAddr=%s, MODE=%s]", this.getID(), 
+				this.getParent().getAddress(),
+				this.getOutLink().getDest().getParent().getAddress(),
+				this.getSendAsWorkingNIC()==true? "W": "P");
 	}
 }
